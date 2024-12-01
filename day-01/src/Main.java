@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 import static java.lang.Math.abs;
 
 public class Main {
-git
+
     public static List<Integer> locationsFirst = new ArrayList<>();
     public static List<Integer> locationsSecond = new ArrayList<>();
 
