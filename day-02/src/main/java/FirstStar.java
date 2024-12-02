@@ -1,7 +1,9 @@
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.IntStream;
+
 
 public class FirstStar {
 
@@ -44,8 +46,8 @@ public class FirstStar {
                     safeCount++;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         System.out.println("Safe reports: " + safeCount);

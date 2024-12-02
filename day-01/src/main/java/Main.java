@@ -1,5 +1,3 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ public class Main {
                 .sum();
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
 
         ClassLoader classLoader = Main.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream("locations.txt")) {

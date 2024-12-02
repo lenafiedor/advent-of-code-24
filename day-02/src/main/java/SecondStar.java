@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -78,8 +79,8 @@ public class SecondStar {
                     safeCount++;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException();
         }
 
         System.out.println("Safe reports: " + safeCount);
