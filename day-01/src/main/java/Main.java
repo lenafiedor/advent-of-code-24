@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,11 +32,19 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        Scanner scanner = new Scanner(new File("locations.txt"));
-        while (scanner.hasNextLine()) {
-            String[] locations = scanner.nextLine().trim().split("\\s+");
-            locationsFirst.add(Integer.valueOf(locations[0]));
-            locationsSecond.add(Integer.valueOf(locations[1]));
+        ClassLoader classLoader = Main.class.getClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream("locations.txt")) {
+            if (inputStream == null) {
+                return;
+            }
+            Scanner scanner = new Scanner(inputStream);
+            while (scanner.hasNextLine()) {
+                String[] locations = scanner.nextLine().trim().split("\\s+");
+                locationsFirst.add(Integer.valueOf(locations[0]));
+                locationsSecond.add(Integer.valueOf(locations[1]));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         locationsFirst.sort(Integer::compareTo);
