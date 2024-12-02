@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-public class FirstStart {
+public class FirstStar {
 
     public static final int MAX_DIFFERENCE = 3;
 
@@ -29,7 +29,7 @@ public class FirstStart {
 
         int safeCount = 0;
 
-        ClassLoader classLoader = FirstStart.class.getClassLoader();
+        ClassLoader classLoader = FirstStar.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream("reports.txt")) {
             if (inputStream == null) {
                 return;
@@ -40,7 +40,6 @@ public class FirstStart {
                 int[] report = Arrays.stream(line.split(" ")).
                         mapToInt(Integer::parseInt).
                         toArray();
-                System.out.println("analysing " + line);
                 if (isSafe(report)) {
                     safeCount++;
                 }
