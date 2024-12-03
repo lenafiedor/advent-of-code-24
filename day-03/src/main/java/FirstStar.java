@@ -13,7 +13,7 @@ public class FirstStar {
 
     public static String getFileContent(String fileName) {
 
-        ClassLoader classLoader = SecondStar.class.getClassLoader();
+        ClassLoader classLoader = FirstStar.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(FILE_NAME)) {
             if (inputStream == null) {
                 return "";
