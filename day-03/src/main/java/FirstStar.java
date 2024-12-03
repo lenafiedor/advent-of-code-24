@@ -9,6 +9,28 @@ import java.util.regex.Pattern;
 
 public class FirstStar {
 
+    public static final String FILE_NAME = "memory.txt";
+
+    public static String getFileContent(String fileName) {
+
+        ClassLoader classLoader = SecondStar.class.getClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream(FILE_NAME)) {
+            if (inputStream == null) {
+                return "";
+            }
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead =inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toString(StandardCharsets.UTF_8);
+
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
     public static List<int[]> findMultiplications(String content) {
         String regex = "mul\\((\\d{1,3}),(\\d{1,3})\\)";
         Pattern pattern = Pattern.compile(regex);
@@ -30,24 +52,8 @@ public class FirstStar {
 
     public static void main(String[] args) {
 
-        ClassLoader classLoader = FirstStar.class.getClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream("memory.txt")) {
-            if (inputStream == null) {
-                return;
-            }
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead =inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
-
-            String content = outputStream.toString(StandardCharsets.UTF_8);
-            long result = multiplyAll(findMultiplications(content));
-            System.out.println("Multiplication result: " + result);
-
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+        String content = getFileContent(FILE_NAME);
+        long result = multiplyAll(findMultiplications(content));
+        System.out.println("Multiplication result: " + result);
     }
 }
