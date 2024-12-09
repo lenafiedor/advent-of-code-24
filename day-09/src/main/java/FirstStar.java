@@ -1,3 +1,4 @@
+import javax.management.StringValueExp;
 import java.io.InputStream;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,20 +78,25 @@ public class FirstStar {
     }
 
     public static boolean containsId(String map, int fileId) {
-        return map.indexOf(fileId) != -1 && map.indexOf('.') < map.lastIndexOf(fileId);
+        System.out.println("Value of file ID: " + String.valueOf(fileId));
+        return map.charAt(map.lastIndexOf(String.valueOf(fileId)) - 1) != '.';
     }
 
     public static String squeezeMap(String map, AtomicInteger emptySpaces) {
 
         int fileId = 9999;
-        while (emptySpaces.get() > 0) {
-            while (containsId(map, fileId)) {
-                System.out.println("Map contains id: " + fileId);
-                System.out.println(map);
+        System.out.println(fileId);
+        while (emptySpaces.get() > 0 && fileId > 9990) {
+            System.out.println("Map contains id: " + fileId);
+            map = swap(map, fileId);
+            emptySpaces.decrementAndGet();
+            System.out.println(map.substring(map.length() - 200));
+            if (!containsId(map, fileId)) {
                 map = swap(map, fileId);
                 emptySpaces.decrementAndGet();
+                System.out.println("Map does not contain anymore id: " + fileId);
+                fileId--;
             }
-            fileId--;
         }
         return map;
     }
@@ -99,7 +105,7 @@ public class FirstStar {
         long checksum = 0;
         for (int i = 0; i < map.length(); i++) {
             if (Character.isDigit(map.charAt(i))) {
-                checksum += i * Character.getNumericValue(map.charAt(i));
+                checksum += (long) i * Character.getNumericValue(map.charAt(i));
             }
             else {
                 break;
@@ -117,7 +123,7 @@ public class FirstStar {
         System.out.println(parsed.substring(0, 100));
 
         parsed = squeezeMap(parsed, emptySpaces);
-        System.out.println(parsed.substring(0, 100));
+        // System.out.println(parsed);
 
         System.out.println("Checksum: " + checksum(parsed));
 
