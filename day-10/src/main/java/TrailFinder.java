@@ -1,7 +1,7 @@
 import java.io.InputStream;
 import java.util.*;
 
-public class FirstStar {
+public class TrailFinder {
 
     public static final String FILE_NAME = "map.txt";
 
@@ -11,7 +11,7 @@ public class FirstStar {
     public static List<String> parseInput() {
 
         try {
-            ClassLoader classLoader = FirstStar.class.getClassLoader();
+            ClassLoader classLoader = TrailFinder.class.getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream(FILE_NAME);
             if (inputStream == null) {
                 return Collections.emptyList();
