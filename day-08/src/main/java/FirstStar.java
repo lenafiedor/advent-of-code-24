@@ -4,7 +4,7 @@ import java.util.*;
 public class FirstStar {
 
     public static final String FILE_NAME = "antennas.txt";
-    public static List<int[]> antinodeLocations = new ArrayList<>();
+    public static List<String> antinodeLocations = new ArrayList<>();
 
     public static List<String> parseInput() {
 
@@ -30,14 +30,14 @@ public class FirstStar {
 
         int antinodes = 0;
         char c = (char) symbol;
-        System.out.println("Searching for char: " + c);
 
         for (String line : map) {
-            if (line.indexOf(c) >= 0) {
-                int[] location = new int[]{map.indexOf(line), line.indexOf(c)};
-                System.out.println("Location of " + c + ": " + location[0] + " " + location[1]);
-                List<int[]> otherLocations = findOtherSymbols(symbol, map, location);
-                antinodes += findAntinodes(map, location, otherLocations);
+            for (int i = 0; i < line.length(); i++) {
+                if (line.charAt(i) == symbol) {
+                    int[] location = new int[]{map.indexOf(line), i};
+                    List<int[]> otherLocations = findOtherSymbols(symbol, map, location);
+                    antinodes += findAntinodes(map, location, otherLocations);
+                }
             }
         }
         return antinodes;
@@ -49,10 +49,12 @@ public class FirstStar {
         char c = (char) symbol;
 
         for (String line : map) {
-            if (line.indexOf(c) >= 0) {
-                int[] otherLocation = new int[]{map.indexOf(line), line.indexOf(c)};
-                if (location[0] != otherLocation[0] && location[1] != otherLocation[1]) {
-                    System.out.println("Other location of " + c + ": " + otherLocation[0] + " " + otherLocation[1]);
+            for (int i = 0; i < line.length(); i++) {
+                if (line.charAt(i) == symbol) {
+                    int[] otherLocation = new int[]{map.indexOf(line), i};
+                    if (location[0] == otherLocation[0] && location[1] == otherLocation[1]) {
+                        continue;
+                    }
                     locations.add(otherLocation);
                 }
             }
@@ -65,33 +67,29 @@ public class FirstStar {
         int antinodes = 0;
 
         for (int[] otherLocation : otherLocations) {
-            int[] delta = new int[]{
-                    Math.abs(otherLocation[0] - location[0]),
-                    Math.abs(location[1] - otherLocation[1])
-            };
+            int[] delta = new int[]{otherLocation[0] - location[0], otherLocation[1] - location[1]};
 
             int[] antinode = new int[]{location[0] - delta[0], location[1] - delta[1]};
             if (canBePlaced(antinode, map.size(), map.get(0).length())) {
                 antinodes += 1;
-                antinodeLocations.add(antinode);
+                antinodeLocations.add(antinode[0] + " " + antinode[1]);
             }
 
             antinode = new int[]{otherLocation[0] + delta[0], otherLocation[1] + delta[1]};
             if (canBePlaced(antinode, map.size(), map.get(0).length())) {
                 antinodes += 1;
-                antinodeLocations.add(antinode);
+                antinodeLocations.add(antinode[0] + " " + antinode[1]);
             }
         }
         return antinodes;
     }
 
     private static boolean canBePlaced(int[] antinode, int height, int width) {
-        boolean can = antinode[0] >= 0 && antinode[0] < height &&
+
+        boolean inRange = antinode[0] >= 0 && antinode[0] < height &&
                 antinode[1] >= 0 && antinode[1] < width;
-        if (can && !antinodeLocations.contains(antinode)) {
-            System.out.println("Antinode placed at " + antinode[0] + " " + antinode[1]);
-        }
-        return can && !antinodeLocations.contains(antinode);
+
+        return inRange && !antinodeLocations.contains(antinode[0] + " " + antinode[1]);
     }
 
     public static int findAntennas(List<String> map) {
