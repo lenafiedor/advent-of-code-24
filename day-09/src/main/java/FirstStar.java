@@ -1,10 +1,13 @@
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FirstStar {
 
     public static final String FILE_NAME = "disk_map.txt";
+    public static int fileId;
 
     public static String parseInput() {
         try {
@@ -25,78 +28,89 @@ public class FirstStar {
         return null;
     }
 
-    public static String parseMap(String map, AtomicInteger emptySpaces) {
+    public static String parseMap(String map, List<Integer> emptySpaces) {
 
         StringBuilder sb = new StringBuilder();
         int index = 0;
+        int parsedIndex = 0;
 
         for (int i = 0; i < map.length(); i++) {
             int value = map.charAt(i) - '0';
             if (i % 2 == 0) {
+                System.out.println("Adding " + String.valueOf(index) + " x " + value);
                 sb.append(String.valueOf(index).repeat(value));
                 index++;
+                parsedIndex += index;
             }
             else {
-                sb.append(".".repeat(value));
-                emptySpaces.addAndGet(value);
-            }
-        }
-        return sb.toString();
-    }
-
-    public static int lastDigit(String map) {
-        for (int i = map.length() - 1; i >= 0; i--) {
-            if (Character.isDigit(map.charAt(i))) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public static String swap(String map, int fileId) {
-
-        String file = String.valueOf(fileId);
-        StringBuilder sb = new StringBuilder(map);
-        int pointer = 0;
-        int lastNumber = map.lastIndexOf(file);
-
-        for (int i = 0; i < map.length(); i++) {
-            if (map.charAt(i) == '.') {
-                sb.setCharAt(i, file.charAt(pointer));
-                pointer++;
-                if (pointer == file.length()) {
-                    break;
+                System.out.println("Adding dots x " + value * String.valueOf(index - 1).length());
+                sb.append(".".repeat(value * String.valueOf(index - 1).length()));
+                for (int j = 0; j < (index - 1) * value; j++) {
+                    emptySpaces.add(parsedIndex);
+                    parsedIndex++;
                 }
+                System.out.println("Empty spaces: " + emptySpaces);
             }
         }
-        for (int i = 0; i < file.length(); i++) {
-            sb.setCharAt(lastNumber + i, '.');
+        fileId = index - 1;
+        return sb.toString();
+    }
+
+    public static boolean isDone(String map, List<Integer> emptySpaces) {
+        int emptySpace = emptySpaces.get(0);
+        System.out.println("DEBUG: action=is_done empty_space_index=" + emptySpace);
+        for (int i = emptySpace + 1; i < map.length(); i++) {
+            if (map.charAt(i) == '.') return false;
+        }
+        return true;
+    }
+
+    public static String swap(String map, int fileId, List<Integer> emptySpaces) {
+
+        String fileIdString = String.valueOf(fileId);
+        StringBuilder sb = new StringBuilder(map);
+        int index = map.lastIndexOf(fileIdString);
+        int pointer = 0;
+
+        for (char digit : fileIdString.toCharArray()) {
+            // System.out.println("DEBUG: action=swap message=setting " + digit + " at index " + emptySpaces.get(0));
+            sb.setCharAt(emptySpaces.get(0), digit);
+            sb.setCharAt(index + pointer, '.');
+            emptySpaces.remove(0);
+            emptySpaces.add(index + pointer);
+            pointer++;
         }
 
         return sb.toString();
     }
 
-    public static boolean containsId(String map, int fileId) {
-        System.out.println("Value of file ID: " + String.valueOf(fileId));
-        return map.charAt(map.lastIndexOf(String.valueOf(fileId)) - 1) != '.';
-    }
+    public static boolean containsId(String map) {
 
-    public static String squeezeMap(String map, AtomicInteger emptySpaces) {
+        System.out.println("DEBUG: action=contains_id message=looking for file ID: " + fileId);
+        int index = map.lastIndexOf(String.valueOf(fileId));
+        // System.out.println("DEBUG: action=contains_id index=" + index);
 
-        int fileId = 9999;
-        System.out.println(fileId);
-        while (emptySpaces.get() > 0 && fileId > 9990) {
-            System.out.println("Map contains id: " + fileId);
-            map = swap(map, fileId);
-            emptySpaces.decrementAndGet();
-            System.out.println(map.substring(map.length() - 200));
-            if (!containsId(map, fileId)) {
-                map = swap(map, fileId);
-                emptySpaces.decrementAndGet();
-                System.out.println("Map does not contain anymore id: " + fileId);
-                fileId--;
+        for (int i = index - 1; i >= 0; i--) {
+            if (map.charAt(i) == '.') {
+                return true;
             }
         }
+        return false;
+    }
+
+    public static String squeezeMap(String map, List<Integer> emptySpaces) {
+
+        while (!isDone(map, emptySpaces) && fileId >= 0) {
+            System.out.println("File ID: " + fileId);
+            while (containsId(map)) {
+                map = swap(map, fileId, emptySpaces);
+                System.out.println(map.substring(0, 100));
+                System.out.println(map.substring(map.length() - 100));
+            }
+            fileId--;
+            System.out.println(map.substring(0, 100));
+        }
+
         return map;
     }
 
@@ -115,14 +129,12 @@ public class FirstStar {
 
     public static void main(String[] args) {
 
-        AtomicInteger emptySpaces = new AtomicInteger(0);
+        List<Integer> emptySpaces = new ArrayList<>();
         String diskMap = parseInput();
 
         String parsed = parseMap(diskMap, emptySpaces);
-        System.out.println(parsed.substring(0, 100));
-
         parsed = squeezeMap(parsed, emptySpaces);
-        // System.out.println(parsed);
+        System.out.println("Parsed: " + parsed.substring(0, 200));
 
         System.out.println("Checksum: " + checksum(parsed));
 
