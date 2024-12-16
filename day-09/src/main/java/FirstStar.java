@@ -1,9 +1,7 @@
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class FirstStar {
@@ -38,36 +36,31 @@ public class FirstStar {
         for (int i = 0; i < map.length(); i++) {
             int value = map.charAt(i) - '0';
             if (i % 2 == 0) {
-                System.out.println("Adding " + index + " x " + value);
                 sb.append(String.valueOf(index).repeat(value));
                 index++;
             }
             else {
-                System.out.println("Adding dots x " + value * String.valueOf(index - 1).length());
                 sb.append(".".repeat(value * String.valueOf(index - 1).length()));
             }
         }
 
         emptySpaces.clear();
-            emptySpaces.addAll(
-                IntStream.range(0, sb.length())
-                        .filter(i -> sb.charAt(i) == '.')
-                        .boxed()
-                        .toList()
-            );
-         
-        System.out.println("Empty spaces: " + emptySpaces);
-        
+        emptySpaces.addAll(
+            IntStream.range(0, sb.length())
+                    .filter(i -> sb.charAt(i) == '.')
+                    .boxed()
+                    .toList()
+        );
         fileId = index - 1;
+
         return sb.toString();
     }
 
     public static boolean isDone(String map, List<Integer> emptySpaces) {
 
         emptySpaces.sort(Comparator.naturalOrder());
-        System.out.println("Empty spaces: " + emptySpaces);
         int emptySpace = emptySpaces.get(0);
-        System.out.println("DEBUG: action=is_done empty_space_index=" + emptySpace);
+
         for (int i = emptySpace + 1; i < map.length(); i++) {
             if (map.charAt(i) != '.') return false;
         }
@@ -82,7 +75,6 @@ public class FirstStar {
         int pointer = 0;
 
         for (char digit : fileIdString.toCharArray()) {
-            // System.out.println("DEBUG: action=swap message=setting " + digit + " at index " + emptySpaces.get(0));
             sb.setCharAt(emptySpaces.get(0), digit);
             sb.setCharAt(index + pointer, '.');
             emptySpaces.remove(0);
@@ -95,11 +87,9 @@ public class FirstStar {
 
     public static boolean containsId(String map) {
 
-        System.out.println("DEBUG: action=contains_id message=looking for file ID: " + fileId);
         int index = map.lastIndexOf(String.valueOf(fileId));
-        System.out.println("DEBUG: action=contains_id index=" + index);
 
-        for (int i = index - 1; i >= 0; i--) {
+        for (int i = index - 1; i >- 0; i--) {
             if (map.charAt(i) == '.') {
                 return true;
             }
@@ -110,10 +100,8 @@ public class FirstStar {
     public static String squeezeMap(String map, List<Integer> emptySpaces) {
 
         while (!isDone(map, emptySpaces) && fileId >= 0) {
-            System.out.println("File ID: " + fileId);
             while (containsId(map)) {
                 map = swap(map, fileId, emptySpaces);
-                System.out.println(map);
             }
             fileId--;
         }
@@ -122,28 +110,21 @@ public class FirstStar {
     }
 
     public static long checksum(String map) {
-        long checksum = 0;
+        long checksum = 0L;
+        int index = 0;
         for (int i = 0; i < map.length(); i++) {
             if (Character.isDigit(map.charAt(i))) {
-                checksum += (long) i * Character.getNumericValue(map.charAt(i));
+                checksum += i * index;
+                int len = String.valueOf(index).length();
+                System.out.println("Parsing index " + i + ", next: " + map.substring(i + 1, i + len + 1));
+                if (i + len < map.length() && !map.substring(i + 1, i + len + 1).equals(String.valueOf(index))) {
+                    index++;
+                }
             }
             else {
                 break;
             }
         }
         return checksum;
-    }
-
-    public static void main(String[] args) {
-
-        List<Integer> emptySpaces = new ArrayList<>();
-        String diskMap = parseInput();
-
-        String parsed = parseMap(diskMap, emptySpaces);
-        parsed = squeezeMap(parsed, emptySpaces);
-        System.out.println("Parsed: " + parsed.substring(0, 200));
-
-        System.out.println("Checksum: " + checksum(parsed));
-
     }
 }
