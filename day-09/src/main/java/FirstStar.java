@@ -1,8 +1,10 @@
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class FirstStar {
 
@@ -32,35 +34,42 @@ public class FirstStar {
 
         StringBuilder sb = new StringBuilder();
         int index = 0;
-        int parsedIndex = 0;
 
         for (int i = 0; i < map.length(); i++) {
             int value = map.charAt(i) - '0';
             if (i % 2 == 0) {
-                System.out.println("Adding " + String.valueOf(index) + " x " + value);
+                System.out.println("Adding " + index + " x " + value);
                 sb.append(String.valueOf(index).repeat(value));
                 index++;
-                parsedIndex += index;
             }
             else {
                 System.out.println("Adding dots x " + value * String.valueOf(index - 1).length());
                 sb.append(".".repeat(value * String.valueOf(index - 1).length()));
-                for (int j = 0; j < (index - 1) * value; j++) {
-                    emptySpaces.add(parsedIndex);
-                    parsedIndex++;
-                }
-                System.out.println("Empty spaces: " + emptySpaces);
             }
         }
+
+        emptySpaces.clear();
+            emptySpaces.addAll(
+                IntStream.range(0, sb.length())
+                        .filter(i -> sb.charAt(i) == '.')
+                        .boxed()
+                        .toList()
+            );
+         
+        System.out.println("Empty spaces: " + emptySpaces);
+        
         fileId = index - 1;
         return sb.toString();
     }
 
     public static boolean isDone(String map, List<Integer> emptySpaces) {
+
+        emptySpaces.sort(Comparator.naturalOrder());
+        System.out.println("Empty spaces: " + emptySpaces);
         int emptySpace = emptySpaces.get(0);
         System.out.println("DEBUG: action=is_done empty_space_index=" + emptySpace);
         for (int i = emptySpace + 1; i < map.length(); i++) {
-            if (map.charAt(i) == '.') return false;
+            if (map.charAt(i) != '.') return false;
         }
         return true;
     }
@@ -88,7 +97,7 @@ public class FirstStar {
 
         System.out.println("DEBUG: action=contains_id message=looking for file ID: " + fileId);
         int index = map.lastIndexOf(String.valueOf(fileId));
-        // System.out.println("DEBUG: action=contains_id index=" + index);
+        System.out.println("DEBUG: action=contains_id index=" + index);
 
         for (int i = index - 1; i >= 0; i--) {
             if (map.charAt(i) == '.') {
@@ -104,11 +113,9 @@ public class FirstStar {
             System.out.println("File ID: " + fileId);
             while (containsId(map)) {
                 map = swap(map, fileId, emptySpaces);
-                System.out.println(map.substring(0, 100));
-                System.out.println(map.substring(map.length() - 100));
+                System.out.println(map);
             }
             fileId--;
-            System.out.println(map.substring(0, 100));
         }
 
         return map;

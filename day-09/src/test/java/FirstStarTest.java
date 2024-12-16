@@ -1,17 +1,19 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FirstStarTest {
 
-    public static AtomicInteger emptySpaces;
+    public static List<Integer> emptySpaces;
 
     @BeforeEach
     void setUp() {
-        emptySpaces = new AtomicInteger(0);
+        emptySpaces = new ArrayList<>();
     }
 
     @Test
