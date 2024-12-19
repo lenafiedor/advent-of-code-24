@@ -85,22 +85,33 @@ public class FirstStar {
         return sb.toString();
     }
 
-    public static boolean containsId(String map) {
-
-        int index = map.lastIndexOf(String.valueOf(fileId));
-
-        for (int i = index - 1; i >- 0; i--) {
-            if (map.charAt(i) == '.') {
-                return true;
+    public static int lastDigitIndex(String map) {
+        for (int i = map.length() - 1; i >= 0; i--) {
+            if (Character.isDigit(map.charAt(i))) {
+                return i;
             }
         }
-        return false;
+        return -1;
+    }
+
+    public static boolean containsId(String map, List<Integer> emptySpaces) {
+
+        int lastDigit = lastDigitIndex(map);
+        String file = String.valueOf(fileId);
+
+        for (int i = file.length() - 1; i >= 0; i--) {
+            if (file.charAt(i) != map.charAt(lastDigit)) {
+                return false;
+            }
+            lastDigit--;
+        }
+        return !isDone(map, emptySpaces);
     }
 
     public static String squeezeMap(String map, List<Integer> emptySpaces) {
 
         while (!isDone(map, emptySpaces) && fileId >= 0) {
-            while (containsId(map)) {
+            while (containsId(map, emptySpaces)) {
                 map = swap(map, fileId, emptySpaces);
             }
             fileId--;
@@ -111,15 +122,9 @@ public class FirstStar {
 
     public static long checksum(String map) {
         long checksum = 0L;
-        int index = 0;
         for (int i = 0; i < map.length(); i++) {
             if (Character.isDigit(map.charAt(i))) {
-                checksum += i * index;
-                int len = String.valueOf(index).length();
-                System.out.println("Parsing index " + i + ", next: " + map.substring(i + 1, i + len + 1));
-                if (i + len < map.length() && !map.substring(i + 1, i + len + 1).equals(String.valueOf(index))) {
-                    index++;
-                }
+                checksum += i * ((long) map.charAt(i) - '0');
             }
             else {
                 break;

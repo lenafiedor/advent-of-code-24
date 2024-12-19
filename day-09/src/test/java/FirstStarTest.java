@@ -91,7 +91,7 @@ class FirstStarTest {
         long checksum = FirstStar.checksum(squeezed);
 
         // then
-        assertEquals(3385, checksum);
+        assertEquals(4046, checksum);
     }
 
     @Test
@@ -104,6 +104,6 @@ class FirstStarTest {
         long checksum = FirstStar.checksum(squeezed);
 
         // then
-        assertEquals(6279058075753L, checksum);
+        assertEquals(85708026123L, checksum);
     }
 }
